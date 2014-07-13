@@ -1,12 +1,13 @@
 {
     "name": "gulp-htmlrefs",
-    "version": "0.0.1",
+    "version": "0.1.2",
     "description": "Replaces references to non-optimized scripts or stylesheets into a set of HTML files (or any templates/views).",
     "main": "index.js",
     "dependencies": {
         "gulp-util": "~2.2.14",
         "through2": "~0.4.1",
-        "glob": "~3.2.9"
+        "glob": "~3.2.9",
+        "lodash": "*"
     },
     "scripts": {
         "test": "mocha"
