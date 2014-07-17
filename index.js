@@ -39,8 +39,8 @@ module.exports = function(options) {
                 cssHandler
             ],
             [
-                /(?:_md5url\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
-                'Update the js _md5url to reference our revved resources'
+                /(?:_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
+                'Update the js _urlrev to reference our revved resources'
             ],
             [
                 /<img[^\>]*[^\>\S]+src=['"]([^"']+)["']/gm,
@@ -97,8 +97,8 @@ module.exports = function(options) {
         ],
         js: [
             [
-                /(?:_md5url\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
-                'Update the js _md5url to reference our revved resources'
+                /(?:_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
+                'Update the js _urlrev to reference our revved resources'
             ]
         ]
     };
@@ -108,7 +108,7 @@ module.exports = function(options) {
     }
 
     function defaultOutHandler(revFile, srcFile, tag) {
-        return tag.replace(srcFile, revFile);
+        return tag.replace(srcFile, options.urlPrefix + revFile);
     }
 
     function scriptHandler(revFile, srcFile, tag) {
@@ -117,7 +117,7 @@ module.exports = function(options) {
             var content = readFile(revFile, options.scope);
             return '<script>' + content + '</script>';
         } else {
-            return tag.replace(srcFile, revFile);
+            return tag.replace(srcFile, options.urlPrefix + revFile);
         }
     }
 
@@ -127,7 +127,7 @@ module.exports = function(options) {
             var content = readFile(revFile, options.scope);
             return '<style>' + content + '</style';
         } else {
-            return tag.replace(srcFile, revFile);
+            return tag.replace(srcFile, options.urlPrefix + revFile);
         }
     }
 
@@ -262,7 +262,8 @@ module.exports = function(options) {
     function replaceWithRevved(type, lines, assetSearchPath) {
         var regexps = _defaultPatterns;
         var content = lines;
-        var log = gutil.log;
+        // var log = gutil.log;
+        var log = function() {};
 
         regexps[type].forEach(function(rxl) {
             var filterIn = rxl[2] || defaultInHandler;
@@ -271,7 +272,6 @@ module.exports = function(options) {
             content = content.replace(rxl[0], function(match, src) {
                 // Consider reference from site root
                 var srcFile = filterIn(src);
-
                 log('looking for revved version of ' + src + ' in ', assetSearchPath);
 
                 var file = revFinder(srcFile.split('?')[0], assetSearchPath);
@@ -321,7 +321,7 @@ module.exports = function(options) {
     }
 
     function process(content, push, callback) {
-        gutil.log('process file ' + pathName);
+        gutil.log('htmlrefs: process file ' + mainName);
         var handler = processHTML;
         if (extName == '.html') {
             handler = processHTML;
