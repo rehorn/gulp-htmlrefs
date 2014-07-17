@@ -1,7 +1,7 @@
 {
     "name": "gulp-htmlrefs",
     "version": "0.1.3",
-    "description": "Replaces references to non-optimized scripts or stylesheets into a set of HTML files (or any templates/views).",
+    "description": "Replaces references of js/css/img to rev version filenames into HTML files.",
     "main": "index.js",
     "dependencies": {
         "gulp-util": "~2.2.14",
