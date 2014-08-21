@@ -7,6 +7,7 @@ var gutil = require('gulp-util');
 
 var _ = require('lodash');
 var glob = require('glob');
+var url = require('url');
 
 module.exports = function(options) {
     options = options || {};
@@ -108,7 +109,7 @@ module.exports = function(options) {
     }
 
     function defaultOutHandler(revFile, srcFile, tag) {
-        return tag.replace(srcFile, options.urlPrefix + revFile);
+        return tag.replace(srcFile, url.resolve(options.urlPrefix, revFile));
     }
 
     function scriptHandler(revFile, srcFile, tag) {
@@ -117,7 +118,7 @@ module.exports = function(options) {
             var content = readFile(revFile, options.scope);
             return '<script>' + content + '</script>';
         } else {
-            return tag.replace(srcFile, options.urlPrefix + revFile);
+            return tag.replace(srcFile, url.resolve(options.urlPrefix, revFile));
         }
     }
 
@@ -127,7 +128,7 @@ module.exports = function(options) {
             var content = readFile(revFile, options.scope);
             return '<style>' + content + '</style';
         } else {
-            return tag.replace(srcFile, options.urlPrefix + revFile);
+            return tag.replace(srcFile, url.resolve(options.urlPrefix, revFile));
         }
     }
 
