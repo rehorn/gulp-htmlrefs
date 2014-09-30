@@ -293,23 +293,27 @@ module.exports = function(options) {
 
     function processHTML(content) {
 
-        var html = [];
-        var sections = content.split(endReg);
-        for (var i = 0, l = sections.length; i < l; ++i) {
-            if (sections[i].match(startReg)) {
-                var section = sections[i].split(startReg);
+        // // only replace <!-- build:htmlrefs --> block to improve speed
+        // var html = [];
+        // var sections = content.split(endReg);
+        // for (var i = 0, l = sections.length; i < l; ++i) {
+        //     if (sections[i].match(startReg)) {
+        //         var section = sections[i].split(startReg);
 
-                // content before <!-- build:
-                html.push(section[0]);
+        //         // content before <!-- build:
+        //         html.push(section[0]);
 
-                html.push(replaceWithRevved('html', section[1], options.scope));
+        //         html.push(replaceWithRevved('html', section[1], options.scope));
 
-            } else {
-                html.push(sections[i]);
-            }
-        }
+        //     } else {
+        //         html.push(sections[i]);
+        //     }
+        // }
 
-        return html.join('');
+        // return html.join('');
+
+        // global replacement 
+        return replaceWithRevved('html', content, options.scope);
     }
 
     function proccessCSS(content) {
