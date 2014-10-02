@@ -1,6 +1,5 @@
 var path = require('path');
 var fs = require('fs');
-var EOL = require('os').EOL;
 
 var through = require('through2');
 var gutil = require('gulp-util');
@@ -39,8 +38,10 @@ module.exports = function(options) {
                 cssHandler
             ],
             [
-                /(?:_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
-                'Update the js _urlrev to reference our revved resources'
+                /(?:(?:function\s*)?_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
+                'Update the js _urlrev to reference our revved resources',
+                null,
+                urlRevHandler
             ],
             [
                 /<img[^\>]*[^\>\S]+src=['"]([^"']+)["']/gm,
@@ -97,8 +98,10 @@ module.exports = function(options) {
         ],
         js: [
             [
-                /(?:_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
-                'Update the js _urlrev to reference our revved resources'
+                /(?:(?:function\s*)?_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
+                'Update the js _urlrev to reference our revved resources',
+                null,
+                urlRevHandler
             ]
         ]
     };
@@ -108,10 +111,16 @@ module.exports = function(options) {
     }
 
     function defaultOutHandler(revFile, srcFile, tag) {
+        if (srcFile.indexOf('://') >= 0) {
+            return tag;
+        }
         return tag.replace(srcFile, options.urlPrefix + revFile);
     }
 
     function scriptHandler(revFile, srcFile, tag) {
+        if (srcFile.indexOf('://') >= 0) {
+            return tag;
+        }
         // handler inline
         if (srcFile.indexOf(inlineTag) > 0) {
             var content = readFile(revFile, options.scope);
@@ -122,6 +131,9 @@ module.exports = function(options) {
     }
 
     function cssHandler(revFile, srcFile, tag) {
+        if (srcFile.indexOf('://') >= 0) {
+            return tag;
+        }
         // handler inline
         if (srcFile.indexOf(inlineTag) > 0) {
             var content = readFile(revFile, options.scope);
@@ -129,6 +141,13 @@ module.exports = function(options) {
         } else {
             return tag.replace(srcFile, options.urlPrefix + revFile);
         }
+    }
+
+    function urlRevHandler(revFile, srcFile, tag) {
+        if (tag.toLowerCase().indexOf('function') >= 0) {
+            return tag;
+        }
+        return defaultOutHandler(revFile, srcFile, tag);
     }
 
     function readFile(file, assetSearchPath) {
@@ -174,8 +193,8 @@ module.exports = function(options) {
         return new gutil.File({
             path: path.join(path.relative(basePath, mainPath), name),
             contents: new Buffer(content)
-        })
-    }
+        });
+    };
 
     function fileExpand(patterns, options) {
         options = options || {};
