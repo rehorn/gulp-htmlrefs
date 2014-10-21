@@ -69,10 +69,10 @@ module.exports = function(options) {
                     return m.replace('.js', '');
                 }
             ],
-            [
-                /data-(?!main).[^=]+=['"]([^'"]+)['"]/gm,
-                'Update the HTML with data-* tags'
-            ],
+            // [
+            //     /data-(?!main).[^=]+=['"]([^'"]+)['"]/gm,
+            //     'Update the HTML with data-* tags'
+            // ],
             [
                 /url\(\s*['"]?([^"'\)]+)["']?\s*\)/gm,
                 'Update the HTML with background imgs, case there is some inline style'
