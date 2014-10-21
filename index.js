@@ -59,16 +59,16 @@ module.exports = function(options) {
                 /<source[^\>]+src=['"]([^"']+)["']/gm,
                 'Update the HTML with the new source filenames'
             ],
-            [
-                /data-main\s*=['"]([^"']+)['"]/gm,
-                'Update the HTML with data-main tags',
-                function(m) {
-                    return m.match(/\.js$/) ? m : m + '.js';
-                },
-                function(m) {
-                    return m.replace('.js', '');
-                }
-            ],
+            // [
+            //     /data-main\s*=['"]([^"']+)['"]/gm,
+            //     'Update the HTML with data-main tags',
+            //     function(m) {
+            //         return m.match(/\.js$/) ? m : m + '.js';
+            //     },
+            //     function(m) {
+            //         return m.replace('.js', '');
+            //     }
+            // ],
             // [
             //     /data-(?!main).[^=]+=['"]([^'"]+)['"]/gm,
             //     'Update the HTML with data-* tags'
@@ -77,14 +77,14 @@ module.exports = function(options) {
                 /url\(\s*['"]?([^"'\)]+)["']?\s*\)/gm,
                 'Update the HTML with background imgs, case there is some inline style'
             ],
-            [
-                /<a[^\>]+href=['"]([^"']+)["']/gm,
-                'Update the HTML with anchors images'
-            ],
-            [
-                /<input[^\>]+src=['"]([^"']+)["']/gm,
-                'Update the HTML with reference in input'
-            ],
+            // [
+            //     /<a[^\>]+href=['"]([^"']+)["']/gm,
+            //     'Update the HTML with anchors images'
+            // ],
+            // [
+            //     /<input[^\>]+src=['"]([^"']+)["']/gm,
+            //     'Update the HTML with reference in input'
+            // ],
             [
                 /<meta[^\>]+content=['"]([^"']+)["']/gm,
                 'Update the HTML with the new img filenames in meta tags'

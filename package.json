@@ -1,6 +1,6 @@
 {
     "name": "gulp-htmlrefs",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "Replaces references of js/css/img to rev version filenames into HTML files.",
     "main": "index.js",
     "dependencies": {
