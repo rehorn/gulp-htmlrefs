@@ -46,49 +46,73 @@ module.exports = function(options) {
             [
                 /<img[^\>]*[^\>\S]+src=['"]([^"']+)["']/gm,
                 'Update the HTML with the new img filenames'
+            ]
+        ],
+        htmlrefs: [
+            [
+                /<script.+src=['"]([^"']+)["'].+>/gm,
+                'Update the HTML script tag to reference new revved files',
+                null,
+                scriptHandler
             ],
-            // [
-            //     /<video[^\>]+src=['"]([^"']+)["']/gm,
-            //     'Update the HTML with the new video filenames'
-            // ],
-            // [
-            //     /<video[^\>]+poster=['"]([^"']+)["']/gm,
-            //     'Update the HTML with the new poster filenames'
-            // ],
-            // [
-            //     /<source[^\>]+src=['"]([^"']+)["']/gm,
-            //     'Update the HTML with the new source filenames'
-            // ],
-            // [
-            //     /data-main\s*=['"]([^"']+)['"]/gm,
-            //     'Update the HTML with data-main tags',
-            //     function(m) {
-            //         return m.match(/\.js$/) ? m : m + '.js';
-            //     },
-            //     function(m) {
-            //         return m.replace('.js', '');
-            //     }
-            // ],
-            // [
-            //     /data-(?!main).[^=]+=['"]([^'"]+)['"]/gm,
-            //     'Update the HTML with data-* tags'
-            // ],
-            // [
-            //     /url\(\s*['"]?([^"'\)]+)["']?\s*\)/gm,
-            //     'Update the HTML with background imgs, case there is some inline style'
-            // ],
-            // [
-            //     /<a[^\>]+href=['"]([^"']+)["']/gm,
-            //     'Update the HTML with anchors images'
-            // ],
-            // [
-            //     /<input[^\>]+src=['"]([^"']+)["']/gm,
-            //     'Update the HTML with reference in input'
-            // ],
-            // [
-            //     /<meta[^\>]+content=['"]([^"']+)["']/gm,
-            //     'Update the HTML with the new img filenames in meta tags'
-            // ]
+            [
+                /<link[^\>]+href=['"]([^"']+)["']/gm,
+                'Update the HTML link css tag to reference new revved files',
+                null,
+                cssHandler
+            ],
+            [
+                /(?:(?:function\s*)?_urlrev\(\s*)['"]?([^'"\)(\?|#)]+)['"]?\s*\)?/gm,
+                'Update the js _urlrev to reference our revved resources',
+                null,
+                urlRevHandler
+            ],
+            [
+                /<img[^\>]*[^\>\S]+src=['"]([^"']+)["']/gm,
+                'Update the HTML with the new img filenames'
+            ],
+            [
+                /<video[^\>]+src=['"]([^"']+)["']/gm,
+                'Update the HTML with the new video filenames'
+            ],
+            [
+                /<video[^\>]+poster=['"]([^"']+)["']/gm,
+                'Update the HTML with the new poster filenames'
+            ],
+            [
+                /<source[^\>]+src=['"]([^"']+)["']/gm,
+                'Update the HTML with the new source filenames'
+            ],
+            [
+                /data-main\s*=['"]([^"']+)['"]/gm,
+                'Update the HTML with data-main tags',
+                function(m) {
+                    return m.match(/\.js$/) ? m : m + '.js';
+                },
+                function(m) {
+                    return m.replace('.js', '');
+                }
+            ],
+            [
+                /data-(?!main).[^=]+=['"]([^'"]+)['"]/gm,
+                'Update the HTML with data-* tags'
+            ],
+            [
+                /url\(\s*['"]?([^"'\)]+)["']?\s*\)/gm,
+                'Update the HTML with background imgs, case there is some inline style'
+            ],
+            [
+                /<a[^\>]+href=['"]([^"']+)["']/gm,
+                'Update the HTML with anchors images'
+            ],
+            [
+                /<input[^\>]+src=['"]([^"']+)["']/gm,
+                'Update the HTML with reference in input'
+            ],
+            [
+                /<meta[^\>]+content=['"]([^"']+)["']/gm,
+                'Update the HTML with the new img filenames in meta tags'
+            ]
         ],
         css: [
             [
@@ -105,6 +129,10 @@ module.exports = function(options) {
             ]
         ]
     };
+
+    var _htmlExtend = [
+
+    ];
 
     function defaultInHandler(m) {
         return m;
@@ -311,28 +339,27 @@ module.exports = function(options) {
     };
 
     function processHTML(content) {
-
-        // // only replace <!-- build:htmlrefs --> block to improve speed
-        // var html = [];
-        // var sections = content.split(endReg);
-        // for (var i = 0, l = sections.length; i < l; ++i) {
-        //     if (sections[i].match(startReg)) {
-        //         var section = sections[i].split(startReg);
-
-        //         // content before <!-- build:
-        //         html.push(section[0]);
-
-        //         html.push(replaceWithRevved('html', section[1], options.scope));
-
-        //     } else {
-        //         html.push(sections[i]);
-        //     }
-        // }
-
-        // return html.join('');
-
         // global replacement 
-        return replaceWithRevved('html', content, options.scope);
+        var content = replaceWithRevved('html', content, options.scope);
+
+        // only replace <!-- build:htmlrefs --> block to improve speed
+        var html = [];
+        var sections = content.split(endReg);
+        for (var i = 0, l = sections.length; i < l; ++i) {
+            if (sections[i].match(startReg)) {
+                var section = sections[i].split(startReg);
+
+                // content before <!-- build:
+                html.push(section[0]);
+
+                html.push(replaceWithRevved('htmlrefs', section[1], options.scope));
+
+            } else {
+                html.push(sections[i]);
+            }
+        }
+
+        return html.join('');
     }
 
     function proccessCSS(content) {
