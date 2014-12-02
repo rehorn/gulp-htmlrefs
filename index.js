@@ -249,7 +249,8 @@ module.exports = function(options) {
         var self = this;
 
         searchPaths.forEach(function(sp) {
-            var key = path.normalize(path.join(sp, file));
+            var key = path.join(sp, file);
+            key = key.replace(/\\/g, '/');
             if (mapping[key]) {
                 // We need to transform the actual file to a form that matches the one we received
                 // For example if we received file 'foo/images/test.png' with searchPaths == ['dist'],
@@ -321,15 +322,19 @@ module.exports = function(options) {
                 var srcFile = filterIn(src);
                 log('looking for revved version of ' + src + ' in ', assetSearchPath);
 
-                var file = revFinder(srcFile.split('?')[0], assetSearchPath);
-                var res = match;
-                file = file.join('');
-                if (!file) {
-                    log('no revved version of ' + src + ' found!');
-                    file = src;
-                } else {
-                    log('replace "' + src + '" to "' + file + '"');
+                var file = srcFile.split('?')[0];
+                if (file.indexOf('http://') < 0) {
+                    file = revFinder(file, assetSearchPath);
+                    file = file.join('');
+                    if (!file) {
+                        log('no revved version of ' + src + ' found!');
+                        file = src;
+                    } else {
+                        // log('replace "' + src + '" to "' + file + '"');
+                        console.log('replace [' + src + '] to [' + file + ']');
+                    }
                 }
+                var res = match;
                 res = filterOut(file, src, match);
                 return res;
             });
